@@ -15,8 +15,12 @@ impl Numple {
 
         let buffer = BufReader::new(f);
         for (i, buf) in buffer.lines().enumerate() {
-            let x = buf?;
-            let xline: Vec<String> = x.trim().split_whitespace().map(|n| n.to_string()).collect();
+            let buf = buf?;
+            let xline: Vec<String> = buf
+                .trim()
+                .split_whitespace()
+                .map(|n| n.to_string())
+                .collect();
 
             for (j, num) in xline.into_iter().enumerate() {
                 let m = num.parse::<u32>()?;
@@ -85,6 +89,7 @@ impl Numple {
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
     #[test]
     fn it_works() {
@@ -105,7 +110,7 @@ mod tests {
     }
 
     #[test]
-    fn it_not_works() {
+    fn failed_open_file() {
         let f = Numple::new("wrong_file.txt");
         if let Err(e) = f {
             eprintln!("{}", &e);
@@ -113,6 +118,21 @@ mod tests {
                 "No such file or directory (os error 2)".to_string(),
                 e.to_string()
             );
+        }
+    }
+
+    #[test]
+    fn failed_read_line() -> Result<(), Box<dyn std::error::Error>> {
+        let _f = Numple::new("failed_read_line.txt")?;
+        Ok(())
+    }
+
+    #[test]
+    fn failed_parse() {
+        let f = Numple::new("failed_parse.txt");
+        if let Err(e) = f {
+            eprintln!("{}", &e);
+            assert_eq!("invalid digit found in string".to_string(), e.to_string());
         }
     }
 }
