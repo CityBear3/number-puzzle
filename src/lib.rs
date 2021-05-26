@@ -9,21 +9,18 @@ pub struct Numple {
 }
 
 impl Numple {
-    pub fn new(filename: &str) -> Result<Numple, std::io::Error> {
+    pub fn new(filename: &str) -> Result<Numple, Box<dyn std::error::Error>> {
         let mut data: [[u32; 9]; 9] = [[0; 9]; 9];
         let f = File::open(filename)?;
 
         let buffer = BufReader::new(f);
         for (i, buf) in buffer.lines().enumerate() {
-            let xline: Vec<u32> = buf
-                .expect("Failed to read line")
-                .trim()
-                .split_whitespace()
-                .map(|n| n.to_string().parse::<u32>().expect("Failed to parse"))
-                .collect();
+            let x = buf?;
+            let xline: Vec<String> = x.trim().split_whitespace().map(|n| n.to_string()).collect();
 
             for (j, num) in xline.into_iter().enumerate() {
-                data[i][j] = num;
+                let m = num.parse::<u32>()?;
+                data[i][j] = m;
             }
         }
         Ok(Numple { numbers: data })
