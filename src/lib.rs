@@ -108,8 +108,10 @@ mod tests {
     }
 
     #[test]
-    fn it_not_works() -> Result<(), std::io::Error> {
-        let _f = Numple::new("wrong_file.txt")?;
-        Ok(())
+    fn it_not_works() {
+        let f = Numple::new("wrong_file.txt");
+        if let Err(e) = f {
+            eprintln!("{}", e);
+        }
     }
 }
