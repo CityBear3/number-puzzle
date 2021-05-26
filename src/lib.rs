@@ -111,7 +111,11 @@ mod tests {
     fn it_not_works() {
         let f = Numple::new("wrong_file.txt");
         if let Err(e) = f {
-            eprintln!("{}", e);
+            eprintln!("{}", &e);
+            assert_eq!(
+                "No such file or directory (os error 2)".to_string(),
+                e.to_string()
+            );
         }
     }
 }
