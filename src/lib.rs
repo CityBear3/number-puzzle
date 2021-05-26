@@ -9,12 +9,9 @@ pub struct Numple {
 }
 
 impl Numple {
-    pub fn new(filename: &str) -> Numple {
+    pub fn new(filename: &str) -> Result<Numple, std::io::Error> {
         let mut data: [[u32; 9]; 9] = [[0; 9]; 9];
-        let f = match File::open(filename) {
-            Ok(f) => f,
-            Err(e) => panic!("{}", e),
-        };
+        let f = File::open(filename)?;
 
         let buffer = BufReader::new(f);
         for (i, buf) in buffer.lines().enumerate() {
@@ -29,7 +26,7 @@ impl Numple {
                 data[i][j] = num;
             }
         }
-        Numple { numbers: data }
+        Ok(Numple { numbers: data })
     }
 
     fn check_number(&self, i: usize, j: usize, number: u32) -> bool {
@@ -94,7 +91,7 @@ mod tests {
     use super::*;
     #[test]
     fn it_works() {
-        let problem = Numple::new("test_problem.txt");
+        let problem = Numple::new("test_problem.txt").unwrap();
         let check: [[u32; 9]; 9] = [
             [0, 0, 5, 3, 0, 0, 0, 0, 0],
             [8, 0, 0, 0, 0, 0, 0, 2, 0],
@@ -111,8 +108,8 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
-    fn it_not_works() {
-        Numple::new("worng_file.txt");
+    fn it_not_works() -> Result<(), std::io::Error> {
+        let _f = Numple::new("wrong_file.txt")?;
+        Ok(())
     }
 }
