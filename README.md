@@ -10,6 +10,6 @@ cargo build --release
 cargo run
 ```
 ### Explain
-This library provide a function to resoleve number place.
+This library provide a function to soleve number place.
 When you use this library, you must set a text file written problem.
 If you would like to know problem format, you can know it from test file.
