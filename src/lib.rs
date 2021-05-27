@@ -17,7 +17,7 @@ impl Numple {
         for (i, buf) in buffer.lines().enumerate() {
             let buf = buf?;
             let xline: Vec<String> = buf
-                .trim()
+                .trim_end()
                 .split_whitespace()
                 .map(|n| n.to_string())
                 .collect();
