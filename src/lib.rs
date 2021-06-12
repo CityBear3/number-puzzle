@@ -8,8 +8,18 @@ pub struct Numple {
     pub numbers: [[u32; 9]; 9],
 }
 
-impl Numple {
-    pub fn new(filename: &str) -> Result<Numple, Box<dyn std::error::Error>> {
+pub trait Solver {
+    fn new(filename: &str) -> Result<Self, Box<dyn std::error::Error>>
+    where
+        Self: std::marker::Sized;
+
+    fn check_number(&self, i: usize, j: usize, number: u32) -> bool;
+
+    fn put_number(&mut self, i: usize, j: usize) -> bool;
+}
+
+impl Solver for Numple {
+    fn new(filename: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let mut data: [[u32; 9]; 9] = [[0; 9]; 9];
         let f = File::open(filename)?;
 
@@ -56,7 +66,7 @@ impl Numple {
         true
     }
 
-    pub fn put_number(&mut self, i: usize, j: usize) -> bool {
+    fn put_number(&mut self, i: usize, j: usize) -> bool {
         if i > 8 {
             return true;
         } else if self.numbers[i][j] != 0 {
