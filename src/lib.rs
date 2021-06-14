@@ -8,6 +8,11 @@ pub struct Numple {
     pub numbers: [[u32; 9]; 9],
 }
 
+#[derive(Debug)]
+pub struct NumpleMini {
+    pub numbers: [[u32; 4]; 4],
+}
+
 pub trait Solver {
     fn new(filename: &str) -> Result<Self, Box<dyn std::error::Error>>
     where
@@ -82,6 +87,88 @@ impl Solver for Numple {
                 if self.check_number(i, j, num) {
                     self.numbers[i][j] = num;
                     if j == 8 {
+                        if self.put_number(i + 1, 0) {
+                            return true;
+                        }
+                    } else if self.put_number(i, j + 1) {
+                        return true;
+                    }
+                }
+                self.numbers[i][j] = 0;
+            }
+            return false;
+        }
+        false
+    }
+}
+
+impl Solver for NumpleMini {
+    fn new(filename: &str) -> Result<Self, Box<dyn std::error::Error>>
+    where
+        Self: std::marker::Sized,
+    {
+        let mut data: [[u32; 4]; 4] = [[0; 4]; 4];
+        let f = File::open(filename)?;
+
+        let buffer = BufReader::new(f);
+        for (i, buf) in buffer.lines().enumerate() {
+            let buf = buf?;
+            let xline: Vec<String> = buf
+                .trim_end()
+                .split_whitespace()
+                .map(|n| n.to_string())
+                .collect();
+
+            for (j, num) in xline.into_iter().enumerate() {
+                let m = num.parse::<u32>()?;
+                data[i][j] = m;
+            }
+        }
+        Ok(NumpleMini { numbers: data })
+    }
+
+    fn check_number(&self, i: usize, j: usize, number: u32) -> bool {
+        for x in 0..4 {
+            if number == self.numbers[i][x] {
+                return false;
+            }
+        }
+
+        for y in 0..4 {
+            if number == self.numbers[y][j] {
+                return false;
+            }
+        }
+
+        let block_i: usize = (i / 2) * 2;
+        let block_j: usize = (j / 2) * 2;
+
+        for x in 0..2 {
+            for y in 0..2 {
+                if number == self.numbers[block_i + y][block_j + x] {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
+    fn put_number(&mut self, i: usize, j: usize) -> bool {
+        if i > 3 {
+            return true;
+        } else if self.numbers[i][j] != 0 {
+            if j == 3 {
+                if self.put_number(i + 1, 0) {
+                    return true;
+                }
+            } else if self.put_number(i, j + 1) {
+                return true;
+            }
+        } else {
+            for num in 1..=4 {
+                if self.check_number(i, j, num) {
+                    self.numbers[i][j] = num;
+                    if j == 3 {
                         if self.put_number(i + 1, 0) {
                             return true;
                         }
